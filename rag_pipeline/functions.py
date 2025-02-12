@@ -26,7 +26,7 @@ def tokenize_text(text: str, max_tokens: int = 512) -> list[str]:
 ##################################
 # 2. Embedding Generation Function
 ##################################
-def get_embedding(text: str, client, EMBEDDING_MODEL) -> list[float] | None:
+def get_embedding(text: str, client, EMBEDDING_MODEL: str) -> list[float] | None:
     """
     Generates an embedding for the given text using OpenAI's text-embedding-ada-002.
     Returns a 1536-dimensional vector.
@@ -44,7 +44,7 @@ def get_embedding(text: str, client, EMBEDDING_MODEL) -> list[float] | None:
 ###############################################
 # 3. Building a Faiss Index for Retrieval
 ###############################################
-def build_index(chunks: list[str], client, EMBEDDING_MODEL) -> tuple[faiss.IndexFlatIP, list[str]]:
+def build_index(chunks: list[str], client, EMBEDDING_MODEL: str) -> tuple[faiss.IndexFlatIP, list[str]]:
     """
     For each text chunk, generates its embedding and builds a Faiss index using inner product (cosine similarity).
     Returns the Faiss index and a list of valid chunks corresponding to the embeddings.
@@ -52,7 +52,7 @@ def build_index(chunks: list[str], client, EMBEDDING_MODEL) -> tuple[faiss.Index
     embeddings = []
     valid_chunks = []
     for chunk in chunks:
-        emb = get_embedding(chunk, client, EMBEDDING_MODEL)
+        emb = get_embedding(chunk, client, EMBEDDING_MODEL: str)
         if emb is not None:
             embeddings.append(emb)
             valid_chunks.append(chunk)
@@ -69,7 +69,7 @@ def build_index(chunks: list[str], client, EMBEDDING_MODEL) -> tuple[faiss.Index
 #######################
 # 4. Retrieval Function
 #######################
-def retrieve_chunks(client, EMBEDDING_MODEL: str,query: str, index: faiss.IndexFlatIP, chunks: list[str], top_k: int = 5) -> list[str]:
+def retrieve_chunks(client, EMBEDDING_MODEL: str, query: str, index: faiss.IndexFlatIP, chunks: list[str], top_k: int = 5) -> list[str]:
     """
     Embeds the query, normalizes it, and searches the Faiss index for the top_k most similar chunks.
     Returns a list of the retrieved text chunks.
@@ -86,7 +86,7 @@ def retrieve_chunks(client, EMBEDDING_MODEL: str,query: str, index: faiss.IndexF
 ################
 # 5. Generation
 ################
-def generate_answer(query: str, context_chunks: list[str], client, CHAT_MODEL) -> str:
+def generate_answer(query: str, context_chunks: list[str], client, CHAT_MODEL: str) -> str:
     """
     Constructs a prompt by combining the retrieved context with the user query,
     then calls the ChatCompletion API (e.g., GPT-3.5-turbo) to generate an answer.
